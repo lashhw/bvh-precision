@@ -47,15 +47,21 @@ int main() {
         bool correctness = result->intersection.t == ref_result->intersection.t;
         correctness_file.write(reinterpret_cast<const char*>(&correctness), sizeof(bool));
 
-        std::cout << statistics.traversal_steps << ", "
-                  << ref_statistics.traversal_steps << std::endl;
-        std::cout << statistics.intersections << ", "
-                  << ref_statistics.intersections << std::endl;
-
-        if (result->intersection.t != ref_result->intersection.t) {
-            std::cerr << result->intersection.t << ", "
-                      << ref_result->intersection.t << std::endl;
-            // exit(EXIT_FAILURE);
+        if (result->intersection.t > ref_result->intersection.t) {
+            std::cerr << r[0] << std::endl;
+            std::cerr << r[1] << std::endl;
+            std::cerr << r[2] << std::endl;
+            std::cerr << r[3] << std::endl;
+            std::cerr << r[4] << std::endl;
+            std::cerr << r[5] << std::endl;
+            std::cerr << r[6] << std::endl;
+            std::cerr << statistics.traversal_steps << std::endl;
+            std::cerr << statistics.intersections << std::endl;
+            std::cerr << ref_statistics.traversal_steps << std::endl;
+            std::cerr << ref_statistics.intersections << std::endl;
+            std::cerr << result->intersection.t << std::endl;
+            std::cerr << ref_result->intersection.t << std::endl;
+            std::cerr << std::endl;
         }
     }
 }
