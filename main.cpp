@@ -44,7 +44,7 @@ int main() {
         intersections_file.write(reinterpret_cast<const char*>(&statistics.intersections), sizeof(size_t));
         ref_traversal_steps_file.write(reinterpret_cast<const char*>(&ref_statistics.traversal_steps), sizeof(size_t));
         ref_intersections_file.write(reinterpret_cast<const char*>(&ref_statistics.intersections), sizeof(size_t));
-        bool correctness = result->intersection.t == ref_result->intersection.t;
+        bool correctness = result->intersection.t <= ref_result->intersection.t;
         correctness_file.write(reinterpret_cast<const char*>(&correctness), sizeof(bool));
 
         if (result->intersection.t > ref_result->intersection.t) {
