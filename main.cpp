@@ -24,6 +24,7 @@ int main() {
     std::ofstream ref_traversal_steps_file("ref_traversal_steps.bin", std::ios::out | std::ios::binary);
     std::ofstream ref_intersections_file("ref_intersections.bin", std::ios::out | std::ios::binary);
     std::ofstream correctness_file("correctness.bin", std::ios::out | std::ios::binary);
+    std::ofstream different_file("different.bin", std::ios::out | std::ios::binary);
     std::ifstream ray_queries_file("ray_queries.bin", std::ios::in | std::ios::binary);
     float r[7];
     while (ray_queries_file.read(reinterpret_cast<char*>(&r), 7 * sizeof(float))) {
@@ -44,10 +45,25 @@ int main() {
         intersections_file.write(reinterpret_cast<const char*>(&statistics.intersections), sizeof(size_t));
         ref_traversal_steps_file.write(reinterpret_cast<const char*>(&ref_statistics.traversal_steps), sizeof(size_t));
         ref_intersections_file.write(reinterpret_cast<const char*>(&ref_statistics.intersections), sizeof(size_t));
-        bool correctness = result->intersection.t <= ref_result->intersection.t;
+
+        bool correctness = false;
+        if (ref_result.has_value()) {
+            if (result.has_value() && result->intersection.t <= ref_result->intersection.t)
+                correctness = true;
+        } else
+            correctness = true;
         correctness_file.write(reinterpret_cast<const char*>(&correctness), sizeof(bool));
 
-        if (result->intersection.t > ref_result->intersection.t) {
+        bool different = (result.has_value() != ref_result.has_value());
+        if (result.has_value() && ref_result.has_value()) {
+            if (result->intersection.t != ref_result->intersection.t) different = true;
+            if (result->intersection.u != ref_result->intersection.u) different = true;
+            if (result->intersection.v != ref_result->intersection.v) different = true;
+            if (result->primitive_index != ref_result->primitive_index) different = true;
+        }
+        different_file.write(reinterpret_cast<const char*>(&different), sizeof(bool));
+
+        if (!correctness) {
             std::cerr << r[0] << std::endl;
             std::cerr << r[1] << std::endl;
             std::cerr << r[2] << std::endl;
