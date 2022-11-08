@@ -1045,6 +1045,7 @@ int main() {
     std::ofstream ref_intersections_file("ref_intersections.bin", std::ios::out | std::ios::binary);
     std::ifstream ray_queries_file("ray_queries.bin", std::ios::in | std::ios::binary);
     float r[7];
+    int finished_cnt = 0;
     while (ray_queries_file.read(reinterpret_cast<char*>(&r), 7 * sizeof(float))) {
         if (rand() % 100 != 0) continue;
 
@@ -2086,5 +2087,8 @@ int main() {
 
         ref_traversal_steps_file.write(reinterpret_cast<const char*>(&ref_statistics.traversal_steps), sizeof(size_t));
         ref_intersections_file.write(reinterpret_cast<const char*>(&ref_statistics.intersections), sizeof(size_t));
+
+        finished_cnt++;
+        std::cout << finished_cnt << std::endl;
     }
 }
