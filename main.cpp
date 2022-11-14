@@ -267,6 +267,20 @@ using MPTraverser_16_16 = bvh::SingleRayTraverser<Bvh, 64, bvh::MPNodeIntersecto
 
 int main() {
     std::vector<Triangle> triangles = parse_ply("sponza.ply");
+
+    auto [bboxes, centers] = bvh::compute_bounding_boxes_and_centers(triangles.data(), triangles.size());
+    auto global_bbox = bvh::compute_bounding_boxes_union(bboxes.get(), triangles.size());
+    Vector3 global_center = (global_bbox.max + global_bbox.min) * 0.5f;
+    Vector3 global_dim = global_bbox.max - global_bbox.min;
+    float global_scale = 2.f / std::max(global_dim[0], std::max(global_dim[1], global_dim[2]));
+
+    for (auto &t : triangles) {
+        t.p0 = (t.p0 - global_center) * global_scale;
+        t.e1 = t.e1 * global_scale;
+        t.e2 = t.e2 * global_scale;
+        t.n = t.n * global_scale * global_scale;
+    }
+
     Bvh bvh = build_bvh(triangles);
     std::cout << "BVH has " << bvh.node_count << " nodes" << std::endl;
 
@@ -1047,13 +1061,20 @@ int main() {
     float r[7];
     int finished_cnt = 0;
     while (ray_queries_file.read(reinterpret_cast<char*>(&r), 7 * sizeof(float))) {
-        if (rand() % 100 != 0) continue;
+        if (rand() % 1000 != 0) continue;
+
+        Vector3 origin(r[0], r[1], r[2]);
+        Vector3 direction(r[3], r[4], r[5]);
+        float tmax = r[6];
+
+        origin = (origin - global_center) * global_scale;
+        tmax = tmax * global_scale;
 
         Ray ray(
-                Vector3(r[0], r[1], r[2]),
-                Vector3(r[3], r[4], r[5]),
+                origin,
+                direction,
                 0.f,
-                r[6]
+                tmax
         );
 
         MPTraverser_1_1::Statistics statistics_1_1;
