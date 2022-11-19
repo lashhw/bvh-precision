@@ -86,7 +86,7 @@ using MPTraverser_23_7 = bvh::SingleRayTraverser<Bvh, 64, bvh::MPNodeIntersector
 using MPTraverser_23_8 = bvh::SingleRayTraverser<Bvh, 64, bvh::MPNodeIntersector<Bvh, 23, 8>>;
 
 int main() {
-    std::vector<Triangle> triangles = parse_ply("sponza.ply");
+    std::vector<Triangle> triangles = parse_ply("model.ply");
 
     auto [bboxes, centers] = bvh::compute_bounding_boxes_and_centers(triangles.data(), triangles.size());
     auto global_bbox = bvh::compute_bounding_boxes_union(bboxes.get(), triangles.size());
